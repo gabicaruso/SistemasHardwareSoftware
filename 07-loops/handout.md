@@ -18,8 +18,34 @@ Dump of assembler code for function ex1:
 ``` 
 
 1. Quantos argumentos a função recebe? Quais seus tipos? Ela retorna algo? O quê? \vspace{5em}
-1. Traduza o programa acima linha a linha. \vspace{10em}
-1. Escreva uma versão legível do programa acima. \newpage
+
+4 int (rdi, rsi, rdx, rcx) e retorna a soma edx com eax
+
+2. Traduza o programa acima linha a linha. \vspace{10em}
+
+```asm
+   int ex1(int a, int b, int c, int d){
+      int e;
+      e = b + 2*a;
+      c = 3*c;
+      e += c;
+      d = 3*d;
+      c = 2*d
+      e += c
+   }
+``` 
+
+3. Escreva uma versão legível do programa acima. \newpage
+
+```asm
+   int ex1(int a, int b, int c, int d){
+      int e;
+      e = b + 2*a;
+      e += 3*c;
+      c = 6*d;
+      e += c;
+   }
+``` 
 
 **Exercício 2**: 
 
@@ -36,10 +62,41 @@ Dump of assembler code for function ex2:
 ```
 
 1. Quantos argumentos a função recebe? Quais seus tipos? Ela retorna algo? O quê? \vspace{5em}
-1. A função acima faz uma comparação. Qual e entre quais variáveis? \vspace{5em}
-1. As instruções nas linhas `ex2+4` e `ex2+12` fazem acessos a memória. Qual o tipo da variável destino?  \vspace{5em}
-1. Faça uma tradução da função acima usando somente `if-goto` \vspace{10em}
-1. Faça uma versão legível da função acima. \newpage
+
+3 int (edi, rsi, rdx) e retorna zero ou 1
+
+2. A função acima faz uma comparação. Qual e entre quais variáveis? \vspace{5em}
+
+compara b com a (a - b > 0 // a > b)
+
+3. As instruções nas linhas `ex2+4` e `ex2+12` fazem acessos a memória. Qual o tipo da variável destino?  \vspace{5em}
+
+4. Faça uma tradução da função acima usando somente `if-goto` \vspace{10em}
+
+```asm
+   int ex2(int a, int b, int *c}{
+      if (a > b) goto if1;
+      *c = b;
+      return 0;
+      if1:
+      *c = a;
+      return 1;
+   }
+``` 
+
+5. Faça uma versão legível da função acima. \newpage
+
+
+```asm
+   int ex2(int a, int b, int *c}{
+      if (a <= b){
+         *c = b;
+         return 0;
+      }
+      *c = a;
+      return 1;
+   }
+``` 
 
 
 # Parte 2 - loops `while` e `for`
@@ -49,19 +106,46 @@ Dump of assembler code for function ex2:
 ```asm
 Dump of assembler code for function soma_2n:
     0x0000 <+0>:     mov    $0x1,%eax
-    0x0005 <+5>:     cmp    $0x1,%edi
-    0x0008 <+8>:     jbe    0x11 <soma_2n+17>
+    0x0005 <+5>:     cmp    $0x1,%edi              2<=
+    0x0008 <+8>:     jbe    0x11 <soma_2n+17>      =>1
     0x000a <+10>:    shr    %edi
     0x000c <+12>:    add    $0x1,%eax
-    0x000f <+15>:    jmp    0x5 <soma_2n+5>
-    0x0011 <+17>:    retq
+    0x000f <+15>:    jmp    0x5 <soma_2n+5>        =>2
+    0x0011 <+17>:    retq                          1<=
 ```
 
 1. Localize no código acima as instruções de saltos (`jmp` ou condicionais `j*`). Desenhe setas indicando para qual linha do código elas pulam.
 
 2. Analise o fluxo de saltos do seu código. Existe um loop? Entre quais linhas? \vspace{5em}
-1. Comece fazendo uma versão *C* usando somente `if-goto` \vspace{15em}
-1. Transforme a construção que você fez acima em um código usando `while`. \vspace{15em}
+
+
+3. Comece fazendo uma versão *C* usando somente `if-goto` \vspace{15em}
+
+```asm
+   int ex3(unsigned int a}{
+      int r = 1;
+      if (a >= 1) goto L15:bccg
+      L7:
+      a = a >> 1
+      r += 1;
+      Lc:
+      if (a > 1) goto L7;
+      return r;
+   }
+``` 
+
+4. Transforme a construção que você fez acima em um código usando `while`. \vspace{15em}
+
+```asm
+   int ex3(unsigned int a}{
+      int r = 1;
+      while (a > 1)}
+         a = a/2:
+         r ++;
+      }
+      return r;
+   }
+``` 
 
 \pagebreak
 
