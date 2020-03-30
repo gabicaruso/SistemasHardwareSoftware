@@ -74,7 +74,7 @@ compara b com a (a - b > 0 // a > b)
 4. Faça uma tradução da função acima usando somente `if-goto` \vspace{10em}
 
 ```asm
-   int ex2(int a, int b, int *c}{
+   int ex2(int a, int b, int *c){
       if (a > b) goto if1;
       *c = b;
       return 0;
@@ -88,7 +88,7 @@ compara b com a (a - b > 0 // a > b)
 
 
 ```asm
-   int ex2(int a, int b, int *c}{
+   int ex2(int a, int b, int *c){
       if (a <= b){
          *c = b;
          return 0;
@@ -122,7 +122,7 @@ Dump of assembler code for function soma_2n:
 3. Comece fazendo uma versão *C* usando somente `if-goto` \vspace{15em}
 
 ```asm
-   int ex3(unsigned int a}{
+   int ex3(unsigned int a){
       int r = 1;
       if (a >= 1) goto L15:bccg
       L7:
@@ -137,7 +137,7 @@ Dump of assembler code for function soma_2n:
 4. Transforme a construção que você fez acima em um código usando `while`. \vspace{15em}
 
 ```asm
-   int ex3(unsigned int a}{
+   int ex3(unsigned int a){
       int r = 1;
       while (a > 1)}
          a = a/2:
@@ -157,20 +157,51 @@ Vamos agora exercitar o que vimos na aula expositiva.
 Dump of assembler code for function soma_n:
    0x066a <+0>:	    mov    $0x0,%edx
    0x066f <+5>:	    mov    $0x0,%eax
-   0x0674 <+10>:	jmp    0x67f <soma_n+21>
-   0x0676 <+12>:	movslq %edx,%rcx
+   0x0674 <+10>:	jmp    0x67f <soma_n+21>      =>1
+   0x0676 <+12>:	movslq %edx,%rcx              2<=
    0x0679 <+15>:	add    %rcx,%rax
    0x067c <+18>:	add    $0x1,%edx
-   0x067f <+21>:	cmp    %edi,%edx
-   0x0681 <+23>:	jl     0x676 <soma_n+12>
+   0x067f <+21>:	cmp    %edi,%edx              1<=
+   0x0681 <+23>:	jl     0x676 <soma_n+12>      =>2
    0x0683 <+25>:	repz retq 
 
 ```
 
 1. Desenhe as flechas indicando o destino de cada instrução de pulo (`jmp` ou `j*`).
-1. Escreva abaixo o cabeçalho da função `soma_n`. **Dica**: procure por registradores que são lidos *antes* de serem escritos. \vspace{3em}
-1. Faça a tradução do código acima para *C* usando somente `if-goto`\vspace{13em}
-1. Converta o código acima para uma versão legível em *C*. \vspace{10em}
+
+2. Escreva abaixo o cabeçalho da função `soma_n`. **Dica**: procure por registradores que são lidos *antes* de serem escritos. \vspace{3em}
+
+long soma_n(int a)
+
+3. Faça a tradução do código acima para *C* usando somente `if-goto`\vspace{13em}
+
+long soma_n(int a){
+   long cont = 0;
+   long ret = 0;
+
+   goto if1:
+
+   if2:
+   ret += cont;
+   cont++;
+
+   if1:
+   if(cont < a) goto if2;
+   return ret;
+}
+
+4. Converta o código acima para uma versão legível em *C*. \vspace{10em}
+
+long soma_n_solucao(int a){
+   int cont = 0;
+   long ret = 0;
+   
+   while(cont < a){
+      ret += cont;
+      cont++;
+   }
+   return ret;
+}
 
 \newpage
 
@@ -261,30 +292,69 @@ Dump of assembler code for function exemplo2:
 Dump of assembler code for function ex5:
     0x1139 <+0>:     mov    $0x0,%ecx
     0x113e <+5>:     mov    $0x0,%r8d
-    0x1144 <+11>:    jmp    0x114a <ex4+17>
-    0x1146 <+13>:    add    $0x1,%rcx
-    0x114a <+17>:    cmp    %rdi,%rcx
-    0x114d <+20>:    jge    0x1161 <ex4+40>
+    0x1144 <+11>:    jmp    0x114a <ex4+17>     =>1
+    0x1146 <+13>:    add    $0x1,%rcx           3<= 4<=
+    0x114a <+17>:    cmp    %rdi,%rcx           1<=
+    0x114d <+20>:    jge    0x1161 <ex4+40>     =>2
     0x114f <+22>:    mov    %rcx,%rax
     0x1152 <+25>:    cqto
     0x1154 <+27>:    idiv   %rsi
     0x1157 <+30>:    test   %rdx,%rdx
-    0x115a <+33>:    jne    0x1146 <ex4+13>
+    0x115a <+33>:    jne    0x1146 <ex4+13>     =>3
     0x115c <+35>:    add    %rcx,%r8
-    0x115f <+38>:    jmp    0x1146 <ex4+13>
-    0x1161 <+40>:    mov    %r8,%rax
+    0x115f <+38>:    jmp    0x1146 <ex4+13>     =>4
+    0x1161 <+40>:    mov    %r8,%rax            2<=
     0x1164 <+43>:    retq
 ```
 
 1. Quantos argumentos a função acima recebe? Quais seus tipos? **Dica**: não se esqueça de buscar por registradores que são lidos antes de serem escritos. \vspace{5em}
-1. A função retorna algum valor? Se sim, qual seu tipo? \vspace{5em}
-1. A função acima combina loops e condicionais. Desenhe setas para onde as instruções de `jmp` apontam.
-2. Com base no exercício anterior, entre quais linhas o loop ocorre? E a condicional? \vspace{5em}
-3. O loop acima tem uma variável contadora. Ela está em qual registrador? Qual seu tipo? \vspace{5em}
-1. Revise o funcionamento da instrução `idiv`. Em qual registrador é armazenado o resultado da divisão? E o resto? \vspace{5em}
-1. Qual a condição testada na condicional? \newpage
-1. Escreva uma versão do código acima usando somente `if-goto`. \vspace{35em}
-1. Escreva uma versão legível do código acima \newpage
+
+2 argumentos long signed
+
+2. A função retorna algum valor? Se sim, qual seu tipo? \vspace{5em}
+
+long
+
+3. A função acima combina loops e condicionais. Desenhe setas para onde as instruções de `jmp` apontam.
+
+4. Com base no exercício anterior, entre quais linhas o loop ocorre? E a condicional? \vspace{5em}
+
+5. O loop acima tem uma variável contadora. Ela está em qual registrador? Qual seu tipo? \vspace{5em}
+
+6. Revise o funcionamento da instrução `idiv`. Em qual registrador é armazenado o resultado da divisão? E o resto? \vspace{5em}
+
+7. Qual a condição testada na condicional? \newpage
+
+8. Escreva uma versão do código acima usando somente `if-goto`. \vspace{35em}
+
+long ex5_solucao(long a, long b){
+   long rcx = 0;
+   long r8 = 0;
+   long rax;
+   long rdx;
+
+   goto if1;
+
+   if3:
+   rcx += 1;
+
+   if1:
+   if(rcx >= a) goto if2;
+   rax = rcx;
+   rax = rax/a;
+   rdx = rax%a;
+   
+   if(rdx != 0) goto if3;
+   r8 += rcx;
+   goto if3;
+
+   if2:
+   rax = r8;
+   return rax;
+}
+
+9. Escreva uma versão legível do código acima \newpage
+
 
 <!--
 **Exercício 5**: Considerando o arquivo *ex5* (função `main` abaixo), responda as perguntas.
