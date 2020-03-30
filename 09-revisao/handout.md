@@ -38,7 +38,15 @@ As chamadas de função são feitas usando a seguinte ordem para os argumentos i
 
 **Exercício**: Traduza esta invocação de função para *C*: 
 
-\newpage 
+~~~{asm}
+   int f = 6;
+   int e = 5;
+   int d = 4;
+   int c = 3;
+   int b = 2;
+   int a = 1;  
+   b = 10 + exemplo1(a, b, c, d, e, f);
+~~~
 
 Vamos agora analisar o código de `exemplo1`:
 
@@ -88,7 +96,15 @@ A operação acima calcula `C + %R1 + (%R2 * S)`. A operação `LEA` **nunca ace
    0x0653 <+9>:	    lea    (%rcx,%r9,1),%eax
 ```
 
-\newpage
+```asm
+   eax = rcx + r9
+```
+
+```asm
+   1(4 + (6*1))
+   4 + 6
+   10
+```
 
 **Exercício**: Com estas informações em mãos, traduza `exemplo1` para *C*
 
@@ -102,7 +118,22 @@ Dump of assembler code for function exemplo1:
    0x0657 <+13>:	retq
 ```
 
-\vspace{10em}
+```asm
+   int exemplo1(int a, int b, int c, int d, inf e, int f){
+      a += b;
+      b += c;
+      c += d;
+      d += e;
+      return(d + f)
+   }
+```
+
+
+```asm
+   int exemplo1(int a, int b, int c, int d, inf e, int f){
+      return(a + b + c + d + e)
+   }
+```
 
 ## Retorno de funções
 
@@ -122,9 +153,25 @@ Vamos terminar nossa revisão analisando novamente a chamada de `exemplo1` no `m
 Anteriormente já vimos que o `call` e os `mov` s acima fazem a chamada `exemplo1(1,2,3,4,5,6)` em *C*. 
 A linha de baixo realiza uma operação aritmética com `%rax`. 
 
-**Exercício**: considerando que `%rax` armazena o valor de retorno de uma função, qual seria a tradução para *C* do bloco de código acima? \vspace{5em}
+**Exercício**: considerando que `%rax` armazena o valor de retorno de uma função, qual seria a tradução para *C* do bloco de código acima? 
 
-
+```asm
+   int f = 6;
+   int e = 5;
+   int d = 4;
+   int c = 3;
+   int b = 2;
+   int a = 1;
+   
+   int exemplo1(int a, int b, int c, int d, int e, int f) {
+      return a+b+c+d+e+f;
+   }
+   
+   int main() {
+      int b = exemplo1(1, 2, 3, 4, 5, 6) + 10;
+      printf("%ld\n", b);
+   }
+```
 
 # Parte 2 - exercícios intermediários
 
@@ -132,9 +179,7 @@ Os exercícios desta seção exercitam dois conceitos ao mesmo tempo. Cada um de
 
 **Importante**: cada exercício estará disponível em uma página do handout de revisão juntamente com questões "padrão" para cada assunto. Essas questões são feitas para ajudar na compreensão dos programas. Faça-as com atenção e facilite sua vida. 
 
-\newpage
-
-**Exercício**: As função abaixo exercita os assuntos **Aritmética** e **Expressões booleanas**. 
+**Exercício 1**: As função abaixo exercita os assuntos **Aritmética** e **Expressões booleanas**. 
  
 ```asm
 Dump of assembler code for function ex1:
@@ -149,21 +194,49 @@ Dump of assembler code for function ex1:
    0x0616 <+28>:	retq   
 ```
 
-1. Quantos argumentos a função acima recebe? Quais seus tipos? Declare a função abaixo. \vspace{5em}
+1. Quantos argumentos a função acima recebe? Quais seus tipos? Declare a função abaixo. 
 
-1. As instruções `LEA` acima representam operações aritméticas ou a operação *endereço de* `&`? Como você fez esta identificação? \vspace{5em}.
+1. As instruções `LEA` acima representam operações aritméticas ou a operação *endereço de* `&`? Como você fez esta identificação?
 
-1. Traduza as operações das linhas `ex1+0` até `ex1+15` para *C* \vspace{10em}
+1. Traduza as operações das linhas `ex1+0` até `ex1+15` para *C*.
 
-1. Nas linhas `ex1+18` e `ex1+21` é feita uma comparação. Qual e entre quais registradores? Onde é armazenado este resultado? \vspace{5em}
+1. Nas linhas `ex1+18` e `ex1+21` é feita uma comparação. Qual e entre quais registradores? Onde é armazenado este resultado? 
 
-1. O quê faz a instrução `movzbl` em `ex1+24`? Juntando com a resposta da pergunta acima, traduza as instruções `ex1+18` até `ex1+27` para *C*.\vspace{5em}
+1. O quê faz a instrução `movzbl` em `ex1+24`? Juntando com a resposta da pergunta acima, traduza as instruções `ex1+18` até `ex1+27` para *C*.
+
+```asm
+   int ex1(long a, long b, long c){
+      long rax;
+      long rcx;
+      rax = a + b;
+      rcx = rax + 4*c;
+      a *= a;
+      rax = a + 2*b;
+      c += rax;
+      if(rcx - c >= 0){
+         return 1;
+      }
+      return 0;
+   }
+```
+
+```asm
+   int ex1(long a, long b, long c){
+      long rcx;
+      rcx = a + b + 4*c;
+      a *= a;
+      c += a + 2*b;
+      if(rcx >= c){
+         return 1;
+      }
+      return 0;
+   }
+```
 
 Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
 
-\newpage
 
-**Exercício**: O exercício abaixo exercita **Chamadas de funções** e **Condicionais**. 
+**Exercício 2**: O exercício abaixo exercita **Chamadas de funções** e **Condicionais**. 
 
 ```asm
 Dump of assembler code for function ex2:
@@ -205,7 +278,7 @@ Usando as perguntas acima preencha o arquivo de solução no repositório e exec
 
 \newpage
 
-**Exercício**: O exercício abaixo exercita **Ponteiros** e **Expressões booleanas**. 
+**Exercício 3**: O exercício abaixo exercita **Ponteiros** e **Expressões booleanas**. 
 
 ```asm
 Dump of assembler code for function ex3:
@@ -236,7 +309,7 @@ Usando as perguntas acima preencha o arquivo de solução no repositório e exec
 
 \newpage
 
-**Exercício**: O exercício abaixo exercita **Chamadas de funções** e **Loops**. 
+**Exercício 4**: O exercício abaixo exercita **Chamadas de funções** e **Loops**. 
 
 ```asm
 Dump of assembler code for function ex4:
