@@ -194,15 +194,25 @@ Dump of assembler code for function ex1:
    0x0616 <+28>:	retq   
 ```
 
-1. Quantos argumentos a função acima recebe? Quais seus tipos? Declare a função abaixo. 
+1. Quantos argumentos a função acima recebe? Quais seus tipos? Declare a função abaixo.
+
+3 long signed.
 
 1. As instruções `LEA` acima representam operações aritméticas ou a operação *endereço de* `&`? Como você fez esta identificação?
 
+Operações aritméticas, pois não aponta para nenhum lugar, não tem (%registrador).
+
 1. Traduza as operações das linhas `ex1+0` até `ex1+15` para *C*.
 
-1. Nas linhas `ex1+18` e `ex1+21` é feita uma comparação. Qual e entre quais registradores? Onde é armazenado este resultado? 
+1. Nas linhas `ex1+18` e `ex1+21` é feita uma comparação. Qual e entre quais registradores? Onde é armazenado este resultado?
+
+Entre rdx (c) e rcx: (rcx - rdx >= 0). E o resultado é armazenado em al.
 
 1. O quê faz a instrução `movzbl` em `ex1+24`? Juntando com a resposta da pergunta acima, traduza as instruções `ex1+18` até `ex1+27` para *C*.
+
+Passou o resultado da comparação para o eax.
+
+Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
 
 ```asm
    int ex1(long a, long b, long c){
@@ -233,9 +243,6 @@ Dump of assembler code for function ex1:
    }
 ```
 
-Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
-
-
 **Exercício 2**: O exercício abaixo exercita **Chamadas de funções** e **Condicionais**. 
 
 ```asm
@@ -252,31 +259,31 @@ Dump of assembler code for function ex2:
    0x0617 <+24>:	retq   
 ```
 
-1. Quantos argumentos a função acima recebe? Quais são seus tipos? Declare-a abaixo. \vspace{5em}
+```asm
+   
+```
+
+1. Quantos argumentos a função acima recebe? Quais são seus tipos? Declare-a abaixo.
 
 Vamos começar trabalhando na linha `ex2+7`, na instrução `call vezes2` . A chamada necessita usar o registrador `%rdi`, mas ele contém o primeiro argumento de `ex2`. 
 
-1. Em qual registrador é guardado o primeiro argumento de `ex2`? Isso é feito antes da chamada `call`. \vspace{5em}
+1. Em qual registrador é guardado o primeiro argumento de `ex2`? Isso é feito antes da chamada `call`.
 
-1. Qual variável é passada como argumento para a função `vezes2` ? \vspace{5em}
+1. Qual variável é passada como argumento para a função `vezes2`? 
 
-1. Escreva abaixo a invocação de `vezes2`. \vspace{5em}
+1. Escreva abaixo a invocação de `vezes2`.
 
-
-Você deve ter notado as instruções `push/pop %rbx` no começo/fim da função. Toda função pode usar os registradores de argumentos (vistos na parte 1) e o de valor de retorno como quiserem. Se precisarem mexer nos outros registradores a prática é salvá-los na pilha no começo da função e restaurá-los no fim. Assim não importa o que a função faça, para a função chamadora é como se não houvesse havido nenhuma modificação nos outros registradores.  \newpage
+Você deve ter notado as instruções `push/pop %rbx` no começo/fim da função. Toda função pode usar os registradores de argumentos (vistos na parte 1) e o de valor de retorno como quiserem. Se precisarem mexer nos outros registradores a prática é salvá-los na pilha no começo da função e restaurá-los no fim. Assim não importa o que a função faça, para a função chamadora é como se não houvesse havido nenhuma modificação nos outros registradores.
 
 Vamos agora olhar a condicional na linha `ex2+12`.
 
-1. Após a chamada `call`, qual o conteúdo de `%rax`? \vspace{5em}
+1. Após a chamada `call`, qual o conteúdo de `%rax`?
 
-1. Juntando suas respostas nas questões de cima, qual é a comparação feita nas linhas `ex2+12, ex2+17` ? \vspace{5em}
+1. Juntando suas respostas nas questões de cima, qual é a comparação feita nas linhas `ex2+12, ex2+17`?
 
-1. Com essas informações em mãos, faça uma tradução do código acima para *C* usando somente `if+goto`. \vspace{10em}
-
+1. Com essas informações em mãos, faça uma tradução do código acima para *C* usando somente `if+goto`.
 
 Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
-
-\newpage
 
 **Exercício 3**: O exercício abaixo exercita **Ponteiros** e **Expressões booleanas**. 
 
