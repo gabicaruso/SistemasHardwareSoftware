@@ -100,18 +100,18 @@ Os exercícios desta seção exercitam mais de um conceito ao mesmo tempo. Cada 
 Dump of assembler code for function ex1:
    0x0616 <+0>:	    push   %rbx
    0x0617 <+1>:	    mov    $0x0,%ebx
-   0x061c <+6>:	    jmp    0x62b <ex1+21>
-   0x061e <+8>:	    mov    $0x0,%eax
+   0x061c <+6>:	    jmp    0x62b <ex1+21>     =>1
+   0x061e <+8>:	    mov    $0x0,%eax          2<= 
    0x0623 <+13>:	callq  0x5fa <faz_algo>
    0x0628 <+18>:	add    $0x1,%ebx
-   0x062b <+21>:	cmpq   $0x0,0x2009dd(%rip)        # 0x201010 <var1>
-   0x0633 <+29>:	jg     0x61e <ex1+8>
+   0x062b <+21>:	cmpq   $0x0,0x2009dd(%rip)    1<=              # 0x201010 <var1>
+   0x0633 <+29>:	jg     0x61e <ex1+8>          =>2
    0x0635 <+31>:	mov    %ebx,%eax
    0x0637 <+33>:	pop    %rbx
    0x0638 <+34>:	retq
 ```
 
-1. A função acima recebe argumentos? Ela retorna algo? Declare-a abaixo. Se houverem outras funções no arquivo, declare-as também no espaço abaixo. \vspace{5em}
+1. A função acima recebe argumentos? Ela retorna algo? Declare-a abaixo. Se houverem outras funções no arquivo, declare-as também no espaço abaixo.
 
 1. Identifique todos os lugares em que uma variável global é usada. \vspace{5em}.
 
@@ -123,7 +123,12 @@ Dump of assembler code for function ex1:
 
 Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. Você pode supor que a função `faz_algo` existe.
 
-\newpage
+```asm
+   long rbx;
+   int ex1(){
+      
+   }
+```
 
 
 **Exercício**: A função abaixo exercita os assuntos **Ponteiros** e **Condicionais**.
