@@ -349,9 +349,8 @@ Com base nas respostas acima escreva seu programa completo no repositório de at
 
 ```asm
    int var1, va2;
-   int ex3(long *rdi){
-      *rdi = 5*var1 + 10*var2;
-      10*var2 = 10*var1;
+   int ex3(long *a){
+      *a = 5*var1 + 10*var2;
    }
 ```
 
