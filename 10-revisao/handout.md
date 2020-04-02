@@ -32,29 +32,58 @@ Nas linhas `+7` até `+12` podemos ver claramente a diferença entre a instruç�
 
 Ou seja, um `MOV` que se utiliza de parênteses represente o operador *variável apontada por* (**\***) em *C*. Um `LEA` nunca acessa a memória.
 
-**Exercício**: Levando as informações acima em conta, faça a tradução das linhas `+7` até `+14` de `muda_valor` \newpage
+**Exercício**: Levando as informações acima em conta, faça a tradução das linhas `+7` até `+14` de `muda_valor`
 
-Vamos agora analisar as linhas `+0` e `+17`:
+```asm
+   0x0601 <+7>:	   eax = 3*rsi  
+   0x0606 <+12>:	   *rdx = edi
+```
+
+Vamos agora analisar as linhas `+0` e `+17`: 
 
 ```asm
    0x05fa <+0>:	    addl   $0x1,0x200a0f(%rip)        # 0x201010 <var_global>
    0x0601 <+7>:	    lea    (%rsi,%rsi,2),%eax
 
    0x060b <+17>:	add    %eax,0x2009ff(%rip)        # 0x201010 <var_global>
-   0x0611 <+23>:	retq
+   0x0611 <+23>:	retq   
 ```
 
 O parênteses indica que estamos mexendo na memória e o fato de estarmos usando o registrador `%rip` indica que os dados apontados são globais. Ou seja, eles tem visibilidade no programa todo e existem durante toda a execução do programa. Este cálculo é feito usando deslocamentos relativos ao endereço da instrução atual. Vejamos um exemplo no caso da linha `+0`.
 
 1. Quando a CPU executa a linha `+0` o registrador `%rip` aponta para a linha seguinte (`0x0601`).
-2. O resultado do lado direito do `addl` pede acesso a memória na posição `%rip + 0x200a0f`
+2. O resultado do lado direito do `addl` pede acesso a memória na posição `%rip + 0x200a0f` 
 3. Ou seja, como `%rip = 0x0601`, o valor que queremos acessar está no endereço de memória `0x0601 + 0x200a0f = 0x201010`
 4. Note que o *gdb* aponta o valor calculado no lado direito da instrução juntamente com o nome da variável global. Este mesmo nome apareceria quando usamos o comando `info variables`
 
 Logo, a tradução da linha `+0` é simplesmente `var_global++`.
 
-**Exercício**: Traduza o programa completo abaixo. \vspace{10em}
+**Exercício**: Traduza o programa completo abaixo.
 
+```asm
+   void muda_valor(int a, int b, int *c){
+   var_global++;
+   eax = 3*b;
+   a = a + eax;
+   *c = a;
+   eax = 3*a;
+   var_global += eax;
+   }
+```
+```asm
+   int var_global = 10;
+
+   void muda_valor(int a, int b, int *c) {
+      var_global++;
+      *c = a + 3*b;
+      var_global += *c * 3;
+   }
+
+   int main() {
+      int b;
+      muda_valor(1, 2, &b);
+   }
+```
 Lembre-se de que, ao rodar o programa, os endereços calculados podem mudar. Ou seja, na hora de analisar o programa rodando usando o *gdb* é sempre melhor usar o comando `b` para parar o programa onde você quiser e o comando `x` para mostrar dados na memória.
 
 # Parte 2 - exercícios intermediários
