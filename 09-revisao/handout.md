@@ -247,31 +247,37 @@ Usando as perguntas acima preencha o arquivo de solução no repositório e exec
 
 ```asm
 Dump of assembler code for function ex2:
-   0x05ff <+0>:	    push   %rbx
-   0x0600 <+1>:	    mov    %rdi,%rbx
-   0x0603 <+4>:	    mov    %rsi,%rdi
-   0x0606 <+7>:	    callq  0x5fa <vezes2>
-   0x060b <+12>:	cmp    %rbx,%rax
-   0x060e <+15>:	jle    0x613 <ex2+20>
-   0x0610 <+17>:	add    %rbx,%rbx
-   0x0613 <+20>:	add    %rbx,%rax
-   0x0616 <+23>:	pop    %rbx
-   0x0617 <+24>:	retq   
-```
-
-```asm
-   
+   0x05ff <+0>:   push   %rbx
+   0x0600 <+1>:   mov    %rdi,%rbx
+   0x0603 <+4>:   mov    %rsi,%rdi
+   0x0606 <+7>:   callq  0x5fa <vezes2>
+   0x060b <+12>:  cmp    %rbx,%rax
+   0x060e <+15>:  jle    0x613 <ex2+20>      =>1
+   0x0610 <+17>:  add    %rbx,%rbx
+   0x0613 <+20>:  add    %rbx,%rax           1<=
+   0x0616 <+23>:  pop    %rbx
+   0x0617 <+24>:  retq   
 ```
 
 1. Quantos argumentos a função acima recebe? Quais são seus tipos? Declare-a abaixo.
+
+Recebe 2 argumentos signed long (rdi e rsi).
 
 Vamos começar trabalhando na linha `ex2+7`, na instrução `call vezes2` . A chamada necessita usar o registrador `%rdi`, mas ele contém o primeiro argumento de `ex2`. 
 
 1. Em qual registrador é guardado o primeiro argumento de `ex2`? Isso é feito antes da chamada `call`.
 
+rdi.
+
 1. Qual variável é passada como argumento para a função `vezes2`? 
 
+O registrador rdi.
+
 1. Escreva abaixo a invocação de `vezes2`.
+
+```asm
+   long rax = vezes2(rdi);
+```
 
 Você deve ter notado as instruções `push/pop %rbx` no começo/fim da função. Toda função pode usar os registradores de argumentos (vistos na parte 1) e o de valor de retorno como quiserem. Se precisarem mexer nos outros registradores a prática é salvá-los na pilha no começo da função e restaurá-los no fim. Assim não importa o que a função faça, para a função chamadora é como se não houvesse havido nenhuma modificação nos outros registradores.
 
@@ -279,68 +285,167 @@ Vamos agora olhar a condicional na linha `ex2+12`.
 
 1. Após a chamada `call`, qual o conteúdo de `%rax`?
 
+o retorno da função vezes2 (2 * rdi).
+
 1. Juntando suas respostas nas questões de cima, qual é a comparação feita nas linhas `ex2+12, ex2+17`?
+
+Se rax (retorno da função) é menor ou igual a rbx (rax <= rbx).
 
 1. Com essas informações em mãos, faça uma tradução do código acima para *C* usando somente `if+goto`.
 
 Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
 
+```asm
+   int vezes2(int rdi);
+
+   long ex2(long rdi, long rsi){
+      long rbx;
+      long rax;
+      rbx = rdi;
+      rdi = rsi;
+      rax = vezes2(rdi);
+      if(rax - rbx <= 0) goto if1;
+      rbx += rbx;
+      if1:
+      rax += rbx;
+      return rax;
+   }
+```
+
+```asm
+   int vezes2(int a);
+
+   long ex2(long a, long b){
+      long rbx = a;
+      a = b;
+      long retvar = vezes2(a);
+      if(retvar <= rbx) goto if1;
+      rbx += rbx;
+      if1:
+      retvar += rbx;
+      return retvar;
+   }
+```
+
 **Exercício 3**: O exercício abaixo exercita **Ponteiros** e **Expressões booleanas**. 
 
 ```asm
 Dump of assembler code for function ex3:
-   0x05fa <+0>:	    cmp    %rsi,%rdi
-   0x05fd <+3>:	    setl   %al
-   0x0600 <+6>: 	movzbl %al,%eax
-   0x0603 <+9>:	    mov    %eax,(%rdx)
-   0x0605 <+11>:	cmp    %rsi,%rdi
-   0x0608 <+14>:	sete   %al
-   0x060b <+17>:	movzbl %al,%eax
-   0x060e <+20>:	mov    %eax,(%rcx)
-   0x0610 <+22>:	cmp    %rsi,%rdi
-   0x0613 <+25>:	setg   %al
-   0x0616 <+28>:	movzbl %al,%eax
-   0x0619 <+31>:	mov    %eax,(%r8)
-   0x061c <+34>:	retq   
+   0x05fa <+0>:   cmp    %rsi,%rdi
+   0x05fd <+3>:   setl   %al
+   0x0600 <+6>:   movzbl %al,%eax         //al para int?
+   0x0603 <+9>:   mov    %eax,(%rdx)
+   0x0605 <+11>:  cmp    %rsi,%rdi
+   0x0608 <+14>:  sete   %al
+   0x060b <+17>:  movzbl %al,%eax
+   0x060e <+20>:  mov    %eax,(%rcx)
+   0x0610 <+22>:  cmp    %rsi,%rdi
+   0x0613 <+25>:  setg   %al
+   0x0616 <+28>:  movzbl %al,%eax
+   0x0619 <+31>:  mov    %eax,(%r8)
+   0x061c <+34>:  retq   
 ```
 
-1. Quantos argumentos a função acima recebe? De quais tipos? Declare-a abaixo. \vspace{5em}
+1. Quantos argumentos a função acima recebe? De quais tipos? Declare-a abaixo.
 
-1. A função acima faz várias comparações. Liste quais e entre quais argumentos. \vspace{7em}
+Recebe 5 argumentos signed, 2 long (rdi e rsi) e 3 ponteiros int (* rdx, * rcx e * r8).
 
-1. Onde é armazenado o resultado de cada comparação? \vspace{7em}
+1. A função acima faz várias comparações. Liste quais e entre quais argumentos.
 
-1. Com base em suas respostas acima, faça uma tradução linha a linha da função acima. \vspace{10em}
+```asm
+   rdi - rsi < 0
+   rdi - rsi == 0
+   rdi - rsi > 0
+```
+
+1. Onde é armazenado o resultado de cada comparação?
+
+al.
+
+1. Com base em suas respostas acima, faça uma tradução linha a linha da função acima.
 
 Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
 
-\newpage
+```asm
+   int ex3(long rdi, long rsi, long *rdx, long *rcx, long *r8){
+      int al;
+      al = (rdi < rsi);
+      *rdx = al;
+      al = (rdi == rsi);
+      *rcx = al;
+      al = (rdi > rsi);
+      *r8 = al;
+      return al;
+   }
+```
 
 **Exercício 4**: O exercício abaixo exercita **Chamadas de funções** e **Loops**. 
 
 ```asm
 Dump of assembler code for function ex4:
-   0x05fe <+0>: 	push   %rbx
-   0x05ff <+1>: 	mov    %edi,%ebx
-   0x0601 <+3>:	    mov    $0x0,%eax
-   0x0606 <+8>:	    jmp    0x60f <ex4+17>
-   0x0608 <+10>:	mov    %eax,%edi
-   0x060a <+12>:	callq  0x5fa <mais_um>
-   0x060f <+17>:	cmp    %ebx,%eax
-   0x0611 <+19>:	jb     0x608 <ex4+10>
-   0x0613 <+21>:	pop    %rbx
-   0x0614 <+22>:	retq   
+   0x05fe <+0>:   push   %rbx
+   0x05ff <+1>:   mov    %edi,%ebx
+   0x0601 <+3>:   mov    $0x0,%eax
+   0x0606 <+8>:   jmp    0x60f <ex4+17>         =>1
+   0x0608 <+10>:  mov    %eax,%edi              2=
+   0x060a <+12>:  callq  0x5fa <mais_um>
+   0x060f <+17>:  cmp    %ebx,%eax              1<=
+   0x0611 <+19>:  jb     0x608 <ex4+10>         =>2
+   0x0613 <+21>:  pop    %rbx
+   0x0614 <+22>:  retq   
 ```
 
-1. Quantos argumentos a função acima recebe? Quais seus tipos? E o valor de retorno? Declare a função abaixo. \vspace{5em}
+1. Quantos argumentos a função acima recebe? Quais seus tipos? E o valor de retorno? Declare a função abaixo.
 
-1. A função acima tem um loop. Entre quais instruções? Use setas para identificá-lo. \vspace{5em}
+1 signed int (edi).
 
-1. É feita uma chamada para `mais_um`. Qual o argumento passado? Onde seu resultado é usado? \vspace{5em}
+1. A função acima tem um loop. Entre quais instruções? Use setas para identificá-lo.
 
-1. Faça uma tradução linha a linha da função acima usando somente `if+goto` \vspace{10em}
+```asm
+   0x0606 <+8>:   jmp    0x60f <ex4+17>         =>1
+   0x0608 <+10>:  mov    %eax,%edi              2=
+   0x060a <+12>:  callq  0x5fa <mais_um>
+   0x060f <+17>:  cmp    %ebx,%eax              1<=
+   0x0611 <+19>:  jb     0x608 <ex4+10>         =>2
+```
+
+1. É feita uma chamada para `mais_um`. Qual o argumento passado? Onde seu resultado é usado?
+
+edi, usado na comparação final do loop (eax < ebx).
+
+1. Faça uma tradução linha a linha da função acima usando somente `if+goto`.
 
 Usando as perguntas acima preencha o arquivo de solução no repositório e execute os testes. 
+
+```asm
+   int ex4(int edi){
+      unsigned int ebx;
+      unsigned int eax;
+      ebx = edi;
+      eax = 0;
+      goto if1;
+      if2:
+      edi = eax;
+      eax = mais_um(edi);
+      if1:
+      if(eax < ebx)goto if2;
+      return eax;
+   }
+```
+
+```asm
+   int mais_um(int a);
+
+   int ex4(int a){
+      unsigned int ebx = a;
+      unsigned int retval = 0;
+      while(retval < ebx){
+         a = retval;
+         retval = mais_um(a);
+      }
+      return retval;
+   }
+```
 
 <!--
 
