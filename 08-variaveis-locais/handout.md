@@ -128,22 +128,60 @@ Dump of assembler code for function main:
 
 1. Vamos começar procurando por variáveis locais que estejam na pilha. Quanto espaço é reservado para elas? Liste abaixo as que você encontrou e dê um nome para cada uma. **Dica**: todo acesso relativo a `%rsp` representa um acesso a variável local.
 
+24 bytes, 1 variável local signed int (loc).
+
 2. A instrução `call` em `main+21` é um `scanf`. O primeiro argumento é a string de formatação. Use o comando `x` do *gdb* para encontrar ela na memória.
 
 3. O segundo argumento do `scanf` é o endereço da variável a ser preenchida. O endereço que qual variável local é passado?
 
-4. Reconstrua a chamada do `scanf` acima. \newpage
+loc (0xc(%rsp)).
+
+4. Reconstrua a chamada do `scanf` acima.
+
+```c
+   scanf("%d", &loc);
+```
 
 Com a chamada do `scanf` pronta, vamos analisar o restante do código.
 
 5. Agora examinaremos as chamadas em `main+40` e `main+62`. Elas são para a função `puts`. Veja sua documentação (procure por *C puts*.) e explique abaixo o quê ela faz e quais são seus argumentos.
 
+São puts, que recebem strings ("Negativo" e "Positivo!") e printa elas no terminal e pula uma linha (/n).
+
 6. Com base na explicação acima, escreva abaixo os argumentos passados para cada chamada.
+
+"Negativo" e "Positivo!"
 
 7. Traduza o código acima para um versão em *C*.
 
 ```c
-   
+   int main(){
+      int loc;
+      int eax = 0;
+      scanf("%d", &loc);
+      if(loc < 0) goto if1;
+      puts("Positivo!");
+      if2:
+      eax = 0;
+      return eax;
+      if1:
+      puts("Negativo");
+      goto if2;
+   }
+```
+
+```c
+   int main(){
+      int loc;
+      scanf("%d", &loc);
+      if(loc < 0){
+         puts("Negativo");
+      }
+      else{
+         puts("Positivo!");
+      }
+      return 0;
+   }
 ```
 
 **Exercício 4** (entrega): levando em conta o código Assembly abaixo, faça uma versão em *C*. Você deverá usar todos os passos feitos nos exercícios anteriores. 
@@ -167,7 +205,14 @@ Dump of assembler code for function ex4:
     0x117d <+52>:    retq
 ```
 
-\newpage
+```c
+   int ex4(int a){
+      int loc1;
+      int loc2;
+      scanf("%d %d", &loc1, &loc2);
+      return loc1 + 2*loc2 + a;
+   }
+```
 
 **Exercício 5** (entrega): vamos agora juntar a aula atual com a anterior. Faça uma versão em *C* do código abaixo. Novamente, use os passos aprendidos nos roteiros anteriores;
 
@@ -193,10 +238,36 @@ Dump of assembler code for function ex5:
    0x070b <+65>:	pop    %rbx
    0x070c <+66>:	retq   
 ```
- 
- 
 
+```c
+   int ex5(){
+      int loc = 1;
+      int eax;
+      int ebx = 0;
+      if2:
+      if(loc <= 0) goto if1;
+      eax = 0;
+      scanf("%d", &loc);
+      eax = loc;
+      if(eax <= 0) goto if2;
+      ebx = ebx + eax;
+      goto if2;
+      if1:
+      eax = ebx;
+      return eax;
+   }
+```
 
-
-
-
+```c
+   int ex5(){
+      int loc = 1;
+      int loc2 = 0;
+      while(loc > 0){
+         scanf("%d", &loc);
+         if(loc > 0){
+            loc2 = loc2 + loc;
+         }
+      }
+      return loc2;
+   }
+```
