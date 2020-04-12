@@ -32,8 +32,6 @@ Qualquer razão acima é suficiente para identificar os tipos das variáveis loc
 
 **Importante**: novamente, nem toda instrução em Assembly pode ser representada em *C*. As instruções `sub 0x10, %rsp` e `add 0x10, %rsp` representam a criação de variáveis locais na pilha e não tem equivalente em *C*. Simplesmente ignoramos elas e usamos as variáveis locais no código.
 
-\newpage
-
 Antes de iniciar o próximo exercício vamos revisar como variáveis locais, globais e strings constantes são acessadas em código assembly. A imagem abaixo exemplifica os três casos:
 
 ![Organização das variáveis locais, globais e strings constantes na memória](pilha-rip.png)
@@ -45,15 +43,12 @@ O endereçamento relativo a `%rip` leva em conta a posição relativa entre a in
 
 **Dica**: o *gdb* coloca o endereço calculado ao lado das instruções deste tipo.
 
-\newpage
-
 **Exercício 1:** É possível que o `lea` abaixo seja aritmético? Por que?
 
 ```asm
 lea    0x8(%rsp),%rdx
 ```
-
-\vspace{5em}
+Não, está pegando o valor da variável local (0x8(%rsp)) e guardando em rdx.
 
 **Exercício 2**: O código abaixo (*ex2.o*) utiliza variáveis locais.
 
@@ -63,21 +58,52 @@ Dump of assembler code for function func1:
    0x0008 <+4>:	    movl   $0xa,0xc(%rsp)
    0x0010 <+12>:	movl   $0xb,0x8(%rsp)
    0x0018 <+20>:	lea    0xc(%rsp),%rdi
-   0x001d <+25>:	callq  0x22 <func1+30>
+   0x001d <+25>:	callq  0x22 <func2>
    0x0022 <+30>:	addl   $0x1,0x8(%rsp)
    0x0027 <+35>:	lea    0x8(%rsp),%rdi
-   0x002c <+40>:	callq  0x31 <func1+45>
+   0x002c <+40>:	callq  0x31 <func2>
    0x0031 <+45>:	add    $0x10,%rsp
    0x0035 <+49>:	retq   
 ```
 
-1. Vamos começar analisando as três primeiras linhas do programa. Quanto espaço é reservado na pilha? Quantas variáveis são inicializadas e quais seus tamanhos e conteúdos? Dê um nome para cada uma delas. \vspace{5em}
-1. Identifique onde as variáveis locais encontradas são usadas. \vspace{5em}
-1. Os `lea` das linhas `+20` e `+35` podem ser aritméticos? Que operação eles representam? \vspace{5em}
-1. Com base em sua resposta acima, traduza as chamadas de função que ocorrem nas linhas `+25` e `+40`. \vspace{5em}
-1. Traduza o programa acima para *C* \vspace{10em}
+1. Vamos começar analisando as três primeiras linhas do programa. Quanto espaço é reservado na pilha? Quantas variáveis são inicializadas e quais seus tamanhos e conteúdos? Dê um nome para cada uma delas.
 
-\newpage
+16 bytes, 2 variáveis locais signed int (loc1 e loc2).
+
+2. Identifique onde as variáveis locais encontradas são usadas.
+
+```asm
+   0x0018 <+20>:	lea    0xc(%rsp),%rdi
+   0x001d <+25>:	callq  0x22 <func2>
+   0x0022 <+30>:	addl   $0x1,0x8(%rsp)
+   0x0027 <+35>:	lea    0x8(%rsp),%rdi
+   0x002c <+40>:	callq  0x31 <func2>
+```
+Nas chamadas da func2, e na <func1+30>.
+
+3. Os `lea` das linhas `+20` e `+35` podem ser aritméticos? Que operação eles representam?
+
+Não, estão pegando os valores das variáveis locais e passando como argumneto da func2.
+
+4. Com base em sua resposta acima, traduza as chamadas de função que ocorrem nas linhas `+25` e `+40`.
+
+```c
+   func2(&loc1);
+   func2(&loc2);
+```
+
+5. Traduza o programa acima para *C*.
+
+```c
+   void func1(){
+      int loc1 = 10;
+      int loc2 = 11;
+      func2(&loc1);
+      loc2++;
+      func2(&loc2);
+      return;
+   }
+```
 
 **Exercício 3**: No exercício anterior vimos como passar variáveis por referência para outras funções. Agora veremos como trabalhar com `scanf`. Veja abaixo a função `main` do executável `ex3`. Abra este arquivo usando o *gdb* e siga os exercícios.
 
@@ -100,22 +126,25 @@ Dump of assembler code for function main:
    0x118c <+67>:    jmp    0x1176 <main+45>
 ```
 
-1. Vamos começar procurando por variáveis locais que estejam na pilha. Quanto espaço é reservado para elas? Liste abaixo as que você encontrou e dê um nome para cada uma. **Dica**: todo acesso relativo a `%rsp` representa um acesso a variável local. \vspace{7em}
+1. Vamos começar procurando por variáveis locais que estejam na pilha. Quanto espaço é reservado para elas? Liste abaixo as que você encontrou e dê um nome para cada uma. **Dica**: todo acesso relativo a `%rsp` representa um acesso a variável local.
 
-1. A instrução `call` em `main+21` é um `scanf`. O primeiro argumento é a string de formatação. Use o comando `x` do *gdb* para encontrar ela na memória. \vspace{7em}
+2. A instrução `call` em `main+21` é um `scanf`. O primeiro argumento é a string de formatação. Use o comando `x` do *gdb* para encontrar ela na memória.
 
-1. O segundo argumento do `scanf` é o endereço da variável a ser preenchida. O endereço que qual variável local é passado? \vspace{7em}
+3. O segundo argumento do `scanf` é o endereço da variável a ser preenchida. O endereço que qual variável local é passado?
 
-1. Reconstrua a chamada do `scanf` acima. \newpage
+4. Reconstrua a chamada do `scanf` acima. \newpage
 
 Com a chamada do `scanf` pronta, vamos analisar o restante do código.
 
-1. Agora examinaremos as chamadas em `main+40` e `main+62`. Elas são para a função `puts`. Veja sua documentação (procure por *C puts*.) e explique abaixo o quê ela faz e quais são seus argumentos. \vspace{5em}
+5. Agora examinaremos as chamadas em `main+40` e `main+62`. Elas são para a função `puts`. Veja sua documentação (procure por *C puts*.) e explique abaixo o quê ela faz e quais são seus argumentos.
 
-1. Com base na explicação acima, escreva abaixo os argumentos passados para cada chamada. \vspace{5em} 
+6. Com base na explicação acima, escreva abaixo os argumentos passados para cada chamada.
 
-1. Traduza o código acima para um versão em *C*. \newpage
+7. Traduza o código acima para um versão em *C*.
 
+```c
+   
+```
 
 **Exercício 4** (entrega): levando em conta o código Assembly abaixo, faça uma versão em *C*. Você deverá usar todos os passos feitos nos exercícios anteriores. 
 
