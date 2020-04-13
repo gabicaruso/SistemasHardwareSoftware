@@ -30,10 +30,17 @@ MOVL $0x5, (%rdx, %rcx, 4)
 
 **Exercício 1:** Considerando um vetor `short *vec` e que o endereço do primeiro elemento de `vec` esteja em `%rdi`
 
-1. qual a instrução usada para mover o conteúdo de `vec[i]` para o registrador `%eax` ?(supondo que o valor de `i` esteja em `%esi`) \vspace{3em}
-2. qual a instrução usada para mover `&vec[i]` para o registrador `%eax`? **Dica**: como você implementava o operador `&` com variáveis locais? \vspace{5em}
+1. qual a instrução usada para mover o conteúdo de `vec[i]` para o registrador `%eax` ?(supondo que o valor de `i` esteja em `%esi`) 
 
-\newpage
+```asm
+MOVW (%rdi, %rsi, 2), $eax
+```
+
+2. qual a instrução usada para mover `&vec[i]` para o registrador `%eax`? **Dica**: como você implementava o operador `&` com variáveis locais?
+
+```asm
+LEA 0x0(%rdi, %rsi, 2), $eax
+```
 
 ## Loops e arrays
 
@@ -52,14 +59,53 @@ MOVL $0x5, (%rdx, %rcx, 4)
   19:   f3 c3                   repz retq
 ~~~
 
-1. A função acima usa vários registradores. Para facilitar a descoberta de quais são parâmetros da função anote abaixo cada registrador usado e, ao lado, a linha do primeiro uso e se esse uso foi leitura ou escrita. \vspace{9em}
+1. A função acima usa vários registradores. Para facilitar a descoberta de quais são parâmetros da função anote abaixo cada registrador usado e, ao lado, a linha do primeiro uso e se esse uso foi leitura ou escrita.
 
-2. Se o primeiro acesso a registrador é de escrita então ele provavelmente não é um parâmetro. Com base nisto, escreva abaixo a declaração da função acima. \vspace{9em}
+```asm
+   int *edi     f:   03 04 8f                add    (%rdi,%rcx,4),%eax     leitura e escrita
+   int esi     15:   39 f2                   cmp    %esi,%edx              leitura
+   int edx      0:   ba 00 00 00 00          mov    $0x0,%edx              escrita
+   int eax      5:   b8 00 00 00 00          mov    $0x0,%eax              escrita
+   }
+```
 
-3. Sempre que escrevemos a notação de acesso à memória `D(%reg1, %reg2, S)` precisamos usar registradores de `64` bits nos lugares de `reg1` e `reg2`. Com base nisto, explique qual o uso feito do registrador `%edx` e porquê usamos a instrução `movslq` na linha `c`. \vspace{9em}
+2. Se o primeiro acesso a registrador é de escrita então ele provavelmente não é um parâmetro. Com base nisto, escreva abaixo a declaração da função acima.
 
-4. Faça uma versão em *C* do código acima usando somente `if-goto`. Escreva, então, ao lado desta versão um código legível em *C*.  \vspace{20em}
+```c
+   int soma(int *edi, int esi)
+```
 
+3. Sempre que escrevemos a notação de acesso à memória `D(%reg1, %reg2, S)` precisamos usar registradores de `64` bits nos lugares de `reg1` e `reg2`. Com base nisto, explique qual o uso feito do registrador `%edx` e porquê usamos a instrução `movslq` na linha `c`. 
+
+O `movslq` na linha `c` transforma o valor de edx (`32` bits) em `64` bits (rcx) para fazer acesso à memória.
+
+4. Faça uma versão em *C* do código acima usando somente `if-goto`. Escreva, então, ao lado desta versão um código legível em *C*.
+
+```c
+   int soma(int *edi, int esi){
+      int edx = 0;
+      int eax = 0;
+      goto if1;
+      if2:
+      eax += edi[edx];
+      edx++;
+      if1:
+      if(edx < esi) goto if2;
+      return eax;
+   }
+```
+
+```c
+   int soma(int *vec, int n){
+      int i = 0;
+      int retval = 0;
+      while(i < n){
+         retval += vec[i];
+         i++;
+      }
+      return retval;
+   }
+```
 
 ## Acesso a elementos constantes
 
@@ -67,9 +113,20 @@ O acesso a elementos "constantes", como `long v[10]; v[5] = 0;`, não é feito u
 
 **Exercício:** Considerando o exemplo acima, responda.
 
-1. Supondo que `v=0x100`, qual o é o endereço de `v[5]`? \vspace{3em}
-1. Escreva a instrução usada para mover o valor `0` para `v[5]` (supondo que o endereço do primeiro elemento esteja em `%rdi`). \vspace{3em}
+1. Supondo que `v=0x100`, qual o é o endereço de `v[5]`?
 
+```asm
+   256 + 32
+   288
+   0x120
+```
+
+1. Escreva a instrução usada para mover o valor `0` para `v[5]` (supondo que o endereço do primeiro elemento esteja em `%rdi`).
+
+```asm
+MOVQ 0x5, %rsi
+MOVQ 0x0, (%rdi, %rsi, 8)
+```
 -----
 
 ~~~{asm}
@@ -82,9 +139,19 @@ b:   0f b6 c0                movzbl %al,%eax
 e:   c3                      retq
 ~~~
 
-1. Temos acessos à memória relativos ao endereço passado em `%rdi` nas linhas `0, 3` e `5`. Isto significa que `%rdi` é um ponteiro. Pelos tipos de acessos feitos, você consegue identificar para qual tipo de variável ele aponta?\vspace{7em}
-2. Traduza os acessos de memória feitos nas linhas citadas acima para a notação de acesso a arrays em *C*. \vspace{7em}
-3. Com base no respondido acima, faça uma versão em *C* legível do código asembly acima. Se ajudar, faça uma tradução linha a linha do Assembly e depois torne-a legível. \vspace{15em}
+1. Temos acessos à memória relativos ao endereço passado em `%rdi` nas linhas `0, 3` e `5`. Isto significa que `%rdi` é um ponteiro. Pelos tipos de acessos feitos, você consegue identificar para qual tipo de variável ele aponta?
+2. Traduza os acessos de memória feitos nas linhas citadas acima para a notação de acesso a arrays em *C*.
+3. Com base no respondido acima, faça uma versão em *C* legível do código asembly acima. Se ajudar, faça uma tradução linha a linha do Assembly e depois torne-a legível.
+
+```c
+   int func_que_recebe_array(int *rdi, int rsi){
+      int eax = rdi[4];
+      eax += *rdi;
+      al = (eax < rdi[8]);
+      eax = al;      
+      return eax;
+   }
+```
 
 ----------
 
