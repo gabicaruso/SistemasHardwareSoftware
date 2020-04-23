@@ -7,20 +7,25 @@
 **Exercício 1:** Abra o arquivo *ex1.c* em um editor e compile-o usando as flags da disciplina (`-Og -Wall -std=c99`). **Sem rodar o programa**, responda as questões abaixo.
 
 **a)** Analisando seu código-fonte, o que este programa faz?
+
 O programa cria um vetor com 11 elementos (de 0 a 10) e printa cada um deles.
 
 **b)** Na execução deste programa, existe alguma possibilidade da alocação dinâmica com `malloc` falhar? Caso sim, indique as situações onde isto poderia acontecer.
+
 Sim, dado que existe um espaço limitado de memório, pode ser que não tenha mais memória RAM disponível.
 
 **c)** O seu programa libera toda memória que aloca? Se não, aponte onde ele deveria fazer isto.
+
 Não, deveria fazer isso no final do programa com o free.
 
 **Exercício 2:** Execute o programa acima e responda as questões abaixo.
 
 **a)** Ocorreu algum problema durante a execução?
+
 Não.
 
 **b)** O comportamento de seu programa muda conforme N? Vá incrementando de um em um e veja o que acontece. Você consegue explicar por que? Discuta com seu grupo e valide sua resposta com o professor.
+
 Não funciona com o 14. Como o códico utiliza <= enquanto deveria usar <, está retornando um valor a mais do que o esperado, entretanto como o alocamento é de 16 bytes, em alguns casos sobra um pouco do espaço reservado para esse valor extra, o que não acontece com o N 14.
 
 **b)** Existem três problemas no código. O primeiro (`vetor` não é desalocado) já indetificamos no exercíco anterior. Você consegue identificar os outros dois? Corrija-os e salve o programa em um arquivo *ex1-certo.c*.
@@ -52,12 +57,15 @@ Para que os problemas encontrados pelo Valgrind sejam mais facilmente identifica
 - linha 18: leitura invalida de um int
 
 **b)** O quê significa o primeiro erro? Como corrigí-lo? 
-Mudar o <= no for para <.
+
+Mudar o <= no primeiro for para <.
 
 **c)** O quê significa o segundo erro? Como corrigí-lo? 
-Mudar o <= no for para <.
+
+Mudar o <= no segundo for para <.
 
 **d)** A seção *HEAP SUMMARY* faz um resumo dos dados alocados/desalocados no seu programa. Ela mostra algum problema? Se sim, qual linha de código é apontada? Qual é o problema diagnosticado por este aviso? 
+
 Linha 8, faz alocamento de memória e não usa o free para liberá-la.
 
 **e)** Verifique que seu programa corrigido *ex1-certo.c* roda sem erros no valgrind. Se não, corrija os problema e rode novamente até que rode sem erros.
