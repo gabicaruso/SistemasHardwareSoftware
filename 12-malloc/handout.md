@@ -6,19 +6,27 @@
 
 **Exercício 1:** Abra o arquivo *ex1.c* em um editor e compile-o usando as flags da disciplina (`-Og -Wall -std=c99`). **Sem rodar o programa**, responda as questões abaixo.
 
-**a)** Analisando seu código-fonte, o que este programa faz?  \vspace{3em}
+**a)** Analisando seu código-fonte, o que este programa faz?
+O programa cria um vetor com 11 elementos (de 0 a 10) e printa cada um deles.
 
-**b)** Na execução deste programa, existe alguma possibilidade da alocação dinâmica com `malloc` falhar? Caso sim, indique as situações onde isto poderia acontecer. \vspace{3em}
+**b)** Na execução deste programa, existe alguma possibilidade da alocação dinâmica com `malloc` falhar? Caso sim, indique as situações onde isto poderia acontecer.
+Sim, dado que existe um espaço limitado de memório, pode ser que não tenha mais memória RAM disponível.
 
-**c)** O seu programa libera toda memória que aloca? Se não, aponte onde ele deveria fazer isto. \vspace{3em}
+**c)** O seu programa libera toda memória que aloca? Se não, aponte onde ele deveria fazer isto.
+Não, deveria fazer isso no final do programa com o free.
 
 **Exercício 2:** Execute o programa acima e responda as questões abaixo.
 
-**a)** Ocorreu algum problema durante a execução? \vspace{3em}
+**a)** Ocorreu algum problema durante a execução?
+Não.
 
-**b)** O comportamento de seu programa muda conforme N? Vá incrementando de um em um e veja o que acontece. Você consegue explicar por que? Discuta com seu grupo e valide sua resposta com o professor. \vspace{4em}
+**b)** O comportamento de seu programa muda conforme N? Vá incrementando de um em um e veja o que acontece. Você consegue explicar por que? Discuta com seu grupo e valide sua resposta com o professor.
+Não funciona com o 14. Como o códico utiliza <= enquanto deveria usar <, está retornando um valor a mais do que o esperado, entretanto como o alocamento é de 16 bytes, em alguns casos sobra um pouco do espaço reservado para esse valor extra, o que não acontece com o N 14.
 
-**b)** Existem três problemas no código. O primeiro (`vetor` não é desalocado) já indetificamos no exercíco anterior. Você consegue identificar os outros dois? Corrija-os e salve o programa em um arquivo *ex1-certo.c*. \vspace{3em}
+**b)** Existem três problemas no código. O primeiro (`vetor` não é desalocado) já indetificamos no exercíco anterior. Você consegue identificar os outros dois? Corrija-os e salve o programa em um arquivo *ex1-certo.c*.
+- Não usa o free (não libera a memória utilizada)
+- <= no primeiro for (tentando quardar um valor fora do vetor)
+- <= no primeiro for (tentando ler um valor fora do vetor)
 
 # Parte 2 - Ferramentas de verificação de memória
 
@@ -39,33 +47,36 @@ Para que os problemas encontrados pelo Valgrind sejam mais facilmente identifica
 
 **Exercício 3:** Vamos rodar agora o programa acima usando o valgrind. Estamos supondos que tanto `ex1` quanto `ex1-certo` foram compilados com `-g` em adição às flags já usadas.
 
-**a)** Rode o Valgrind com `valgrind --leak-check=yes ./ex1`. Quais foram os problemas encontrados e em quais linhas do código?  \vspace{3em}
+**a)** Rode o Valgrind com `valgrind --leak-check=yes ./ex1`. Quais foram os problemas encontrados e em quais linhas do código? 
+- linha 13: escrita invalida de um int
+- linha 18: leitura invalida de um int
 
-**b)** O quê significa o primeiro erro? Como corrigí-lo?  \vspace{3em}
+**b)** O quê significa o primeiro erro? Como corrigí-lo? 
+Mudar o <= no for para <.
 
-**c)** O quê significa o segundo erro? Como corrigí-lo?  \vspace{3em}
+**c)** O quê significa o segundo erro? Como corrigí-lo? 
+Mudar o <= no for para <.
 
-**d)** A seção *HEAP SUMMARY* faz um resumo dos dados alocados/desalocados no seu programa. Ela mostra algum problema? Se sim, qual linha de código é apontada? Qual é o problema diagnosticado por este aviso?  \vspace{3em}
+**d)** A seção *HEAP SUMMARY* faz um resumo dos dados alocados/desalocados no seu programa. Ela mostra algum problema? Se sim, qual linha de código é apontada? Qual é o problema diagnosticado por este aviso? 
+Linha 8, faz alocamento de memória e não usa o free para liberá-la.
 
 **e)** Verifique que seu programa corrigido *ex1-certo.c* roda sem erros no valgrind. Se não, corrija os problema e rode novamente até que rode sem erros.
 
-
 # Parte 3 - implementações de funções (**Entrega**)
-
 
 **Exercício 4:** Abra o arquivo *ex4.c* e implemente a função *mystrcpy*. Esta função recebe uma string, e devolve uma cópia da string original, alocando apenas o espaço realmente necessário.
 
-**a)** Efetue alguns testes no terminal e confira se está ok. \vspace{2em}
+**a)** Efetue alguns testes no terminal e confira se está ok.
 
-**b)** Confira com o Valgrind se a sua implementação produz algum erro em relação aos acessos de memória. \vspace{2em}
+**b)** Confira com o Valgrind se a sua implementação produz algum erro em relação aos acessos de memória.
 
 **Exercício 5:** Abra o arquivo *ex5.c* e implemente a função *mystrcat*. Esta função recebe duas string, e devolve uma terceira que é a concatenação das duas primeiras, alocando apenas o espaço realmente necessário.
 
-**a)** Efetue alguns testes no terminal e confira se está ok. \vspace{2em}
+**a)** Efetue alguns testes no terminal e confira se está ok. 
 
-**b)** Confira com o Valgrind se a sua implementação produz algum erro em relação aos acessos de memória. \vspace{2em}
+**b)** Confira com o Valgrind se a sua implementação produz algum erro em relação aos acessos de memória. 
 
-**Exercício 6:** Você percebeu que, no código base dos dois exercícios anteriores a memória alocada dinamicamente não foi devolvida ao sistema? Nestes casos, explique qual parte do código deve ser responsável pela liberação e por que?\vspace{5em}
+**Exercício 6:** Você percebeu que, no código base dos dois exercícios anteriores a memória alocada dinamicamente não foi devolvida ao sistema? Nestes casos, explique qual parte do código deve ser responsável pela liberação e por que?
 
 # Parte 4 - implementação de programas completos
 
