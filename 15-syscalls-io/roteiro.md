@@ -7,12 +7,15 @@
 
 Nesta seção trabalharemos com as chamadas `open`, `close`, `read` e `write`.
 
-**Exercício 1**: Leia o código do arquivo `exemplo_io1.c`. O quê ele faz? \vspace{5em}
+**Exercício 1**: Leia o código do arquivo `exemplo_io1.c`. O quê ele faz?
 
+Ele abre um arquivo com o nome passado pelo terminal e enquanto i for menor que 5 (?) ele lê o arquivo, depois disso fecha-o.
 
 Vamos agora usar o comando `man` para ver a documentação das chamadas de sistema do Linux. Digite no terminal `man read`. A tela mostrada contém a documentação da função `read`, incluindo sua assinatura e quais cabeçalhos devem ser incluídos para que ela possa ser usada.
 
-**Exercício 2**: Usando como apoio a documentação aberta pelo comando `man`, como saber que um arquivo foi lido até o fim? **Dica**: a seção `RETURN VALUE` pode te ajudar. \vspace{5em}
+**Exercício 2**: Usando como apoio a documentação aberta pelo comando `man`, como saber que um arquivo foi lido até o fim? **Dica**: a seção `RETURN VALUE` pode te ajudar.
+
+Quando zero for retornado.
 
 **Exercício 3**: Baseado em sua resposta acima, modifique `exemplo_io1.c` para que ele mostre o arquivo inteiro. Para ficar melhor de visualizar o resultado, faça o `printf` interno mostrar somente o caractere lido.
 
@@ -26,11 +29,9 @@ Estes exercícios não terão correção durante a aula e devem ser checados no 
 
 <div class="alert"> Não sabe como usar `time` ou `diff`? Use o comando `man` visto acima. Não sabe usar `man`? Use o comando `man` para aprender a usá-lo com `man man`.</div>
 
-\newpage
+**Exercício 6**: Use o manual para entender o significado dos tempos mostrados pelo comando `time`. Escreva abaixo seu entendimento.
 
-**Exercício 6**: Use o manual para entender o significado dos tempos mostrados pelo comando `time`. Escreva abaixo seu entendimento. \vspace{3em}
-
-**Exercício 7**: Você consegue explicar a diferença de desempenho entre as duas versões? Lembre-se da aula de hierarquia de memória e da velocidade de acesso aos diferentes tipos de memória. \vspace{5em}
+**Exercício 7**: Você consegue explicar a diferença de desempenho entre as duas versões? Lembre-se da aula de hierarquia de memória e da velocidade de acesso aos diferentes tipos de memória.
 
 # Parte 2 - permissões e posse de arquivos
 
@@ -48,11 +49,11 @@ A flag `O_CREAT` é usada para indicar que o arquivo deve ser criado caso ele n�
 
 O primeiro dígito contém as permissões do usuário dono do arquivo. O segundo dígito contém as permissões do grupo dono do arquivo. Usuários que pertencem a este grupo possuem estas permissões. O terceiro dígito lista as permissões para todos os outros usuários.
 
-**Exercício 1**: Use `ls -l` na pasta do arquivo criado por `copy_file` (ou por `exemplo_io2`). Onde é possível obter as informações de permissões do arquivo? Qual o usuário e grupo donos do arquivo? As permissões passadas para o `open` foram corretamente colocadas no arquivo? \vspace{5em}
+**Exercício 1**: Use `ls -l` na pasta do arquivo criado por `copy_file` (ou por `exemplo_io2`). Onde é possível obter as informações de permissões do arquivo? Qual o usuário e grupo donos do arquivo? As permissões passadas para o `open` foram corretamente colocadas no arquivo? 
 
-**Exercício 2**: Quais permissões são garantidas pela máscara `640`? É uma boa ideia usá-la? \vspace{5em}
+**Exercício 2**: Quais permissões são garantidas pela máscara `640`? É uma boa ideia usá-la?
 
-**Exercício 3**: Qual máscara usaria se quisesse que um arquivo possa ser modificado somente por seu dono, mas possa ser executado por qualquer usuário do sistema (incluindo o dono do arquivo)? Justifique. \vspace{5em}
+**Exercício 3**: Qual máscara usaria se quisesse que um arquivo possa ser modificado somente por seu dono, mas possa ser executado por qualquer usuário do sistema (incluindo o dono do arquivo)? Justifique. 
 
 **Exercício 4**: Rode o comando `copy_file` usando `sudo`. Use `ls -l` para listar as informações do arquivo e verifique seu dono e as permissões. Use os comandos `chown` para mudar o dono do arquivo para seu usuário e `chmod` para deixar suas permissões como leitura e escrita para você e somente leitura para o restante.
 
@@ -60,7 +61,7 @@ O primeiro dígito contém as permissões do usuário dono do arquivo. O segundo
 
 Estes exercícios trabalham com o conceito de posse de arquivos e de sobrescrita de arquivos já existentes.
 
-**Exercício 5**: Tente usar `copy_file` usando como fonte algum arquivo que você não possui acesso de leitura (você pode criá-lo e depois usar `chmod` para editar os acessos). O quê ocorre? Você consegue explicar este comportamento? \vspace{3em}
+**Exercício 5**: Tente usar `copy_file` usando como fonte algum arquivo que você não possui acesso de leitura (você pode criá-lo e depois usar `chmod` para editar os acessos). O quê ocorre? Você consegue explicar este comportamento?
 
 **Exercício 6**: Conserte o erro ocorrido acima checando a saída de `open`. Consulte o manual caso necessário. Não se esqueça de fazê-lo para o arquivo fonte e destino.
 
