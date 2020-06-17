@@ -51,6 +51,7 @@ int main()
     sem_init(&s, 0, 0);
 
     // TODO: criar e esperar N threads
+
     pthread_t ids[N];
     thread_barrier_args args[N];
 
